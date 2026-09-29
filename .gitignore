@@ -1,0 +1,5 @@
+node_modules/
+.DS_Store
+*.tmp
+# Real tool results written by scripts/snapshot.mjs for the local preview.
+preview/snapshots.json

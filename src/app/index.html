@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Usage</title>
+    <style>
+      /* Every color comes from the host's MCP Apps variables, which Codex maps to its
+         own theme tokens. Fallbacks mirror Codex's light and dark values. */
+      :root {
+        color-scheme: light dark;
+        --fg: var(--color-text-primary, #0d0d0d);
+        --fg-2: var(--color-text-secondary, #5d5d5d);
+        --fg-3: var(--color-text-tertiary, #8f8f8f);
+        --bg: var(--color-background-primary, #ffffff);
+        --track: var(--color-background-tertiary, #e8e8e8);
+        --line: var(--color-border-secondary, rgba(13, 13, 13, 0.08));
+        --line-strong: var(--color-border-primary, rgba(13, 13, 13, 0.15));
+        --warn: var(--color-text-warning, #c2410c);
+        --danger: var(--color-text-danger, #d92d20);
+        --ok: var(--color-text-success, #16a34a);
+        --radius: var(--border-radius-full, 999px);
+      }
+      :root[data-theme="dark"] {
+        --fg: var(--color-text-primary, #ffffff);
+        --fg-2: var(--color-text-secondary, #afafaf);
+        --fg-3: var(--color-text-tertiary, #7d7d7d);
+        --bg: var(--color-background-primary, #181818);
+        --track: var(--color-background-tertiary, #303030);
+        --line: var(--color-border-secondary, rgba(255, 255, 255, 0.08));
+        --line-strong: var(--color-border-primary, rgba(255, 255, 255, 0.16));
+        --warn: var(--color-text-warning, #fb923c);
+        --danger: var(--color-text-danger, #f87171);
+        --ok: var(--color-text-success, #4ade80);
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; background: var(--bg); color: var(--fg); }
+      body {
+        font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif);
+        font-size: var(--font-text-sm-size, 13px);
+        line-height: var(--font-text-sm-line-height, 1.45);
+        -webkit-font-smoothing: antialiased;
+        font-variant-numeric: tabular-nums;
+      }
+      /* Padding on #root/main with var()-based values rendered as 0 inside Codex;
+         plain values on our own container work. */
+      .usage-page {
+        padding: 14px 16px 20px !important;
+        max-width: 1040px;
+        margin: 0 auto;
+      }
+      .usage-page::after { content: ""; display: block; height: var(--safe-bottom, 0px); }
+      body[data-view="inline"] .usage-page { padding: 12px 14px 12px !important; }
+
+      .head { padding-bottom: 12px; }
+      .head-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+      .head-title { display: flex; align-items: center; gap: 8px; min-width: 0; }
+      .updated { font-size: 12px; margin-top: 2px; }
+      h1 { margin: 0; font-size: var(--font-heading-xs-size, 15px); font-weight: var(--font-weight-semibold, 600); letter-spacing: -0.01em; }
+      .plan { font-size: 12px; color: var(--fg-2); border: 1px solid var(--line-strong); border-radius: var(--radius); padding: 1px 9px; }
+      .sub { color: var(--fg-2); }
+      .icon-btn { display: inline-grid; place-items: center; width: 26px; height: 26px; margin: -4px -5px -4px 0; border: 0; border-radius: 6px; background: transparent; color: var(--fg-2); cursor: pointer; }
+      .icon-btn:hover { color: var(--fg); background: var(--track); }
+      .icon-btn.spin svg { animation: spin 0.9s linear infinite; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      .block { padding: 14px 0; border-top: 1px solid var(--line); }
+      .metric + .metric { margin-top: 14px; }
+      .label { font-weight: var(--font-weight-medium, 500); }
+      .row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; min-width: 0; }
+      .row.sub, .pace { font-size: 12px; }
+      .row.sub { margin-top: 2px; }
+      .pace { color: var(--fg-2); margin-top: 3px; }
+      .pace.warn { color: var(--warn); }
+
+      .bar { position: relative; height: 6px; margin: 8px 0 6px; border-radius: var(--radius); background: var(--track); }
+      .bar.thin { height: 4px; margin: 8px 0 4px; }
+      .bar > b { display: block; height: 100%; min-width: 3px; border-radius: inherit; background: var(--fg); transition: width 0.4s ease; }
+      .bar.warn > b { background: var(--warn); }
+      .bar.danger > b { background: var(--danger); }
+      .tick { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; border-radius: 1px; background: var(--fg-3); }
+
+      .kv { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; min-width: 0; }
+      .kv > span:first-child { color: var(--fg-2); }
+      .block > .label + .kv { margin-top: 6px; }
+      .title { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; min-width: 0; }
+      .kv > .title { color: var(--fg) !important; }
+      .nowrap { white-space: nowrap; }
+
+      .bars { display: flex; align-items: flex-end; gap: 2px; height: 36px; margin-top: 12px; }
+      .bars.tall { height: 150px; gap: 4px; }
+      .bars i { flex: 1; min-width: 0; border-radius: 2px 2px 1px 1px; background: var(--track); }
+      .bars i:hover { background: var(--fg-3); }
+      .bars i.today { background: var(--fg); }
+      .axis { margin-top: 4px; }
+
+      .list { list-style: none; margin: 6px 0 0; padding: 0; }
+      .threads { list-style: none; margin: 4px -8px 0; padding: 0; }
+      .thread { padding: 7px 8px 6px; border-radius: 8px; cursor: pointer; }
+      .thread:hover { background: var(--track); }
+      .thread.current { cursor: default; }
+      .thread.current:hover { background: transparent; }
+      .thread .title { font-weight: var(--font-weight-normal, 400); }
+      .thread.current .title { font-weight: var(--font-weight-medium, 500); }
+      .thread .bar.thin { height: 3px; margin: 6px 0 3px; }
+      .thread:not(.current) .bar > b { background: var(--fg-3); }
+
+      .notice { font-size: 12px; color: var(--fg-2); }
+      .notice.danger { color: var(--danger); margin-bottom: 10px; }
+
+      .status-link { display: flex; align-items: center; gap: 8px; color: inherit; text-decoration: none; font-size: 12px; }
+      .status-link .title { flex: 1; color: var(--fg-2); }
+      .status-link:hover .title { color: var(--fg); }
+      .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; background: var(--ok); }
+      .dot.warn { background: var(--warn); }
+      .dot.danger { background: var(--danger); }
+
+      .columns { display: grid; grid-template-columns: minmax(260px, 0.9fr) minmax(0, 1.3fr); gap: 0 36px; }
+      .col { min-width: 0; }
+      @media (max-width: 680px) { .columns { grid-template-columns: 1fr; } }
+
+      .inline-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0 28px; }
+      .foot { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="usage-app" class="usage-page"></div>
+    <!-- APP_SCRIPT -->
+  </body>
+</html>

@@ -1,0 +1,32 @@
+{
+  "name": "codex-usage-plugin",
+  "version": "0.3.0",
+  "description": "Codex plugin that shows rate limits, reset times and token usage beside your threads.",
+  "license": "MIT",
+  "author": "Dmitry Nehaychik (https://github.com/nnixaa)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nnixaa/codex-usage-plugin.git"
+  },
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.5"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "smoke": "node scripts/smoke.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/ext-apps": "^1.7.5",
+    "@modelcontextprotocol/sdk": "^1.31.0",
+    "@openai/mcp-extensions": "0.1.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "esbuild": "^0.28.1",
+    "typescript": "^5.9.3"
+  }
+}

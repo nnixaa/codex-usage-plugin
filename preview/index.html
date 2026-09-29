@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Usage preview host</title>
+<style>
+  body { margin: 0; padding: 20px; font: 13px system-ui; background: #e9e9ec; color: #222; }
+  body.dark { background: #0b0b0b; color: #ddd; }
+  .wrap { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
+  figure { margin: 0; }
+  figcaption { margin-bottom: 6px; opacity: .6; }
+  iframe { border: 1px solid #0002; border-radius: 12px; background: transparent; display: block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <figure><figcaption>Thread tab (panel)</figcaption><iframe data-view="panel" data-tool="usage.panel" width="340" height="900"></iframe></figure>
+  <figure><figcaption>Sidebar (dashboard)</figcaption><iframe data-view="dashboard" data-tool="usage.dashboard" width="940" height="900"></iframe></figure>
+  <figure><figcaption>Inline in chat</figcaption><iframe data-view="inline" data-tool="usage.show" width="640" height="330"></iframe></figure>
+</div>
+<script>
+// Minimal MCP Apps host: answers ui/initialize, pushes the tool result, proxies usage.refresh.
+const theme = new URLSearchParams(location.search).get("theme") || "light";
+if (theme === "dark") document.body.classList.add("dark");
+const only = new URLSearchParams(location.search).get("only");
+if (only) for (const f of document.querySelectorAll("iframe")) if (f.dataset.view !== only) f.closest("figure").remove();
+// Approximations of what Codex resolves its theme tokens to.
+const vars = theme === "dark"
+  ? { "--color-background-primary": "#181818", "--color-background-tertiary": "#303030", "--color-text-primary": "#ffffff", "--color-text-secondary": "#afafaf", "--color-text-tertiary": "#afafaf", "--color-border-primary": "rgba(255,255,255,0.16)", "--color-border-secondary": "rgba(255,255,255,0.08)", "--color-text-warning": "#fb923c", "--color-text-danger": "#f87171", "--color-text-success": "#40c977" }
+  : { "--color-background-primary": "#ffffff", "--color-background-tertiary": "#ececec", "--color-text-primary": "#0d0d0d", "--color-text-secondary": "#5d5d5d", "--color-text-tertiary": "#8f8f8f", "--color-border-primary": "rgba(13,13,13,0.15)", "--color-border-secondary": "rgba(13,13,13,0.08)", "--color-text-warning": "#c2410c", "--color-text-danger": "#d92d20", "--color-text-success": "#00a240" };
+const snapshots = fetch("snapshots.json").then(r => r.json());
+for (const frame of document.querySelectorAll("iframe")) {
+  const view = frame.dataset.view;
+  frame.src = "../plugin/dist/app.html";
+  window.addEventListener("message", async (event) => {
+    if (event.source !== frame.contentWindow) return;
+    const msg = event.data; const reply = (result) => frame.contentWindow.postMessage({ jsonrpc: "2.0", id: msg.id, result }, "*");
+    const snap = (await snapshots)[view];
+    if (msg.method === "ui/initialize") {
+      reply({ protocolVersion: "2026-01-26", hostInfo: { name: "preview-host", version: "0" }, hostCapabilities: { serverTools: {} },
+        hostContext: { theme, styles: { variables: vars }, safeAreaInsets: { top: 0, right: 0, bottom: 0, left: 0 }, platform: "desktop", displayMode: view === "inline" ? "inline" : "fullscreen", toolInfo: { tool: { name: frame.dataset.tool, inputSchema: { type: "object" } } } } });
+    } else if (msg.method === "ui/notifications/initialized") {
+      frame.contentWindow.postMessage({ jsonrpc: "2.0", method: "ui/notifications/tool-result", params: snap }, "*");
+    } else if (msg.method === "tools/call") {
+      await new Promise(r => setTimeout(r, 600));
+      reply({ ...snap, structuredContent: { ...snap.structuredContent, generatedAt: Date.now() } });
+    } else if (msg.id != null) {
+      reply({});
+    }
+  });
+}
+</script>
+</body>
+</html>

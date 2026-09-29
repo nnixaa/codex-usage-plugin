@@ -1,0 +1,29 @@
+{
+  "name": "usage",
+  "version": "0.3.0",
+  "description": "See Codex rate limits, reset times, and token usage without leaving the conversation.",
+  "author": {
+    "name": "Dmitry Nehaychik",
+    "url": "https://github.com/nnixaa"
+  },
+  "homepage": "https://github.com/nnixaa/codex-usage-plugin",
+  "license": "MIT",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Usage",
+    "shortDescription": "Codex limits and token usage at a glance",
+    "longDescription": "Shows your Codex rate-limit windows with reset countdowns and pace, limit-reset credits, token usage from local session logs, the threads in the current project with their context fill, and OpenAI status. Open it beside any thread or from the sidebar.",
+    "developerName": "Dmitry Nehaychik",
+    "websiteUrl": "https://github.com/nnixaa/codex-usage-plugin",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read"
+    ],
+    "composerIcon": "./assets/icon.svg",
+    "logo": "./assets/icon.svg",
+    "defaultPrompt": [
+      "@Usage how much of my limit is left?"
+    ]
+  }
+}
